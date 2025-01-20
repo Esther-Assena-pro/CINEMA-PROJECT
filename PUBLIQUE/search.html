@@ -1,29 +1,40 @@
-<!-- filepath: /C:/Users/esthe/OneDrive/Documentos/CINEMA PROJECT/PUBLIQUE/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Search</title>
+    <title>Découvrir - TOURCINE</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Movie Search</h1>
-    <nav>
-        <ul>
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="search.html">Découvrir</a></li>
-            <li><a href="movie.html">Top 10</a></li>
-            <li><a href="Contact.html">Support</a></li>
-        </ul>
-    </nav>
-    <form id="search-form">
-        <input type="text" id="search-input" placeholder="Search for movies...">
-        <button type="submit">Search</button>
-    </form>
-    <div id="movie-container"></div>
-    <div id="top-movies-container"></div>
+    <header>
+        <img src="logo.png" alt="Logo de l'entreprise" class="logo">
+        <h1>TOURCINE</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="search.html">Découvrir</a></li>
+                <li><a href="contact.html">Support</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <form id="search-form">
+            <input type="text" id="search-input" placeholder="Rechercher des films...">
+            <button type="submit">Rechercher</button>
+        </form>
+        <div id="search-results"></div>
+        <button id="load-more-button">Charger plus de films</button>
+    </main>
+    <footer>
+        <p class="cinema-name">TOURCINE</p>
+        <p>© 2024 Esther Assena</p>
+        <div class="social-links">
+            <a href="https://www.facebook.com" target="_blank">Facebook</a>
+            <a href="https://www.twitter.com" target="_blank">Twitter</a>
+            <a href="https://www.linkedin.com" target="_blank">LinkedIn</a>
+        </div>
+    </footer>
     <script src="search.bundle.js"></script>
-    <script src="top-movies.bundle.js"></script>
 </body>
 </html>
