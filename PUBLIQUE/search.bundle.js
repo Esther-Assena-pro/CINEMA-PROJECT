@@ -1,68 +1,89 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('search.bundle.js loaded');
+
     const searchForm = document.getElementById('search-form');
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
     const loadMoreButton = document.getElementById('load-more-button');
     let currentPage = 1;
     let currentQuery = '';
+    let isSearching = false;
+    let searchTimeout;
+
+    // Clear the search input when the page loads
+    searchInput.value = '';
 
     // Restore search state from localStorage
-    if (localStorage.getItem('currentQuery')) {
-        currentQuery = localStorage.getItem('currentQuery');
-        currentPage = parseInt(localStorage.getItem('currentPage'), 10) || 1;
+    const savedQuery = localStorage.getItem('currentQuery');
+    const savedPage = localStorage.getItem('currentPage');
+    const savedResults = localStorage.getItem('searchResults');
+    if (savedQuery && savedPage && savedResults) {
+        currentQuery = savedQuery;
+        currentPage = parseInt(savedPage, 10);
+        searchResults.innerHTML = savedResults;
         searchInput.value = currentQuery;
-        const storedResults = localStorage.getItem('searchResults');
-        if (storedResults) {
-            displayMovies(JSON.parse(storedResults), searchResults);
-        }
     }
 
+    window.addEventListener('beforeunload', (event) => {
+        if (isSearching) {
+            event.preventDefault();
+            event.returnValue = '';
+        }
+    });
+
     searchForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Empêche le rechargement de la page
+        event.preventDefault(); // enpeche le rechargement de la page
+        if (isSearching) return;
+        isSearching = true;
+        toggleSearchState(true);
         currentQuery = searchInput.value;
         currentPage = 1;
         const movies = await searchMovies(currentQuery, currentPage);
-        localStorage.setItem('currentQuery', currentQuery);
-        localStorage.setItem('currentPage', currentPage);
-        localStorage.setItem('searchResults', JSON.stringify(movies));
-        displayMovies(movies, searchResults);
+        displayMovies(movies, false);
+        isSearching = false;
+        toggleSearchState(false);
     });
 
-    searchInput.addEventListener('input', async (event) => {
-        event.preventDefault(); // Empêche le rechargement de la page
+    searchInput.addEventListener('input', () => {
+        if (isSearching) return;
         currentQuery = searchInput.value;
-        if (currentQuery.length > 2) {
-            const suggestions = await searchMovies(currentQuery, 1);
-            displayMovies(suggestions, searchResults);
-        } else if (currentQuery.length === 0) {
-            searchResults.innerHTML = '';
+        if (currentQuery.length > 0 ) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                isSearching = true;
+                toggleSearchState(true);
+                currentPage = 1;
+                const movies = await searchMovies(currentQuery, currentPage);
+                displayMovies(movies, false);
+                isSearching = false;
+                toggleSearchState(false);
+            }, 0); // evite de faire une requete a chaque lettre tapée et donne plus de temps pour taper et faire une recherche et de contexte pour la recherche
         }
     });
 
     loadMoreButton.addEventListener('click', async () => {
+        if (isSearching) return;
+        isSearching = true;
+        toggleSearchState(true);
         currentPage++;
         const movies = await searchMovies(currentQuery, currentPage);
-        const storedResults = JSON.parse(localStorage.getItem('searchResults')) || [];
-        const updatedResults = storedResults.concat(movies);
-        localStorage.setItem('currentPage', currentPage);
-        localStorage.setItem('searchResults', JSON.stringify(updatedResults));
-        displayMovies(updatedResults, searchResults);
+        displayMovies(movies, true);
+        isSearching = false;
+        toggleSearchState(false);
     });
 
     async function searchMovies(query, page) {
-        console.log(`Searching for movies: ${query}, page: ${page}`);
         const response = await fetch(`https://www.omdbapi.com/?apikey=aff6b636&s=${query}&page=${page}`);
         const data = await response.json();
-        console.log('API response:', data);
-        return data.Search;
+        return data.Search ? data.Search : []; // Get the search results
     }
 
-    function displayMovies(movies, container) {
-        console.log('Displaying movies:', movies);
-        if (currentPage === 1) {
-            container.innerHTML = '';
+    function displayMovies(movies, append = false) {
+        if (!append) {
+            searchResults.innerHTML = '';
         }
-        if (movies) {
+        if (movies.length > 0) {
+            const fragment = document.createDocumentFragment();
             movies.forEach(movie => {
                 const movieElement = document.createElement('div');
                 movieElement.className = 'movie-card';
@@ -72,10 +93,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="${movie.Poster}" alt="${movie.Title}">
                     <button onclick="window.location.href='movie.html?id=${movie.imdbID}'">Voir les détails</button>
                 `;
-                container.appendChild(movieElement);
+                fragment.appendChild(movieElement);
             });
-        } else {
-            container.innerHTML = '<p>Aucun film trouvé.</p>';
+            searchResults.appendChild(fragment);
+        } else if (!append) {
+            searchResults.innerHTML = '<p>Aucun film trouvé.</p>';
         }
+        // Save search state to localStorage
+        localStorage.setItem('currentQuery', currentQuery);
+        localStorage.setItem('currentPage', currentPage);
+        localStorage.setItem('searchResults', searchResults.innerHTML);
+    }
+
+    function toggleSearchState(isSearching) {
+        searchInput.disabled = isSearching;
+        loadMoreButton.disabled = isSearching;
     }
 });
