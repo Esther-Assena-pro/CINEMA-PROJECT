@@ -8,10 +8,10 @@ const port = 3000;
 
 
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname))); // Sers les fichiers statiques depuis le répertoire publique
+app.use(express.static(path.join(__dirname))); // Sers les fichiers statiques depuis mon répertoire publique
 
 // MongoDB connection
-const mongoURI = 'mongodb+srv://assenacamela:Z11VVWeVraLsR1H5@esther1.3hc9a.mongodb.net/?retryWrites=true&w=majority&appName=Esther1'; // Remplacez par votre URI de connexion MongoDB
+const mongoURI = 'mongodb+srv://assenacamela:Z11VVWeVraLsR1H5@esther1.3hc9a.mongodb.net/?retryWrites=true&w=majority&appName=Esther1'; 
 mongoose.connect(mongoURI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));

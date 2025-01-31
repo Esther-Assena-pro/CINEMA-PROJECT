@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadMoreButton = document.getElementById('load-more-button');
     let currentPage = 1;
 
-    // Fetch and display the top rated movies when the page loads
+    
     fetchTopMovies();
 
     loadMoreButton.addEventListener('click', async () => {
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getTopMovies(page) {
         const response = await fetch(`https://www.omdbapi.com/?apikey=aff6b636&s=top&page=${page}`);
         const data = await response.json();
-        return data.Search ? data.Search : []; // Get the top movies
+        return data.Search ? data.Search : []; // les meilleur film
     }
 
     function displayMovies(movies) {

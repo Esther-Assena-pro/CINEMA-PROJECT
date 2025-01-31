@@ -10,10 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let isSearching = false;
     let searchTimeout;
 
-    // Clear the search input when the page loads
+    // efface les infos au rechargement de la page
     searchInput.value = '';
 
-    // Restore search state from localStorage
+    // Remet les resultats de la recherche si la page a été rechargée
     const savedQuery = localStorage.getItem('currentQuery');
     const savedPage = localStorage.getItem('currentPage');
     const savedResults = localStorage.getItem('searchResults');
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayMovies(movies, false);
                 isSearching = false;
                 toggleSearchState(false);
-            }, 0); // evite de faire une requete a chaque lettre tapée et donne plus de temps pour taper et faire une recherche et de contexte pour la recherche
+            }, 300); // evite de faire une requete a chaque lettre tapée et donne plus de temps pour taper et faire une recherche et de contexte pour la recherche
         }
     });
 
@@ -99,14 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (!append) {
             searchResults.innerHTML = '<p>Aucun film trouvé.</p>';
         }
-        // Save search state to localStorage
+        // LE localStorage permet de stocker des données dans le navigateur
         localStorage.setItem('currentQuery', currentQuery);
         localStorage.setItem('currentPage', currentPage);
         localStorage.setItem('searchResults', searchResults.innerHTML);
     }
 
-    function toggleSearchState(isSearching) {
-        searchInput.disabled = isSearching;
+    function toggleSearchState(isSearching) { //je vais pas désactiver les entrées pendant la recherche
         loadMoreButton.disabled = isSearching;
     }
 });
